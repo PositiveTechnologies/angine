@@ -1,0 +1,27 @@
+namespace example {
+
+    policy p1 {
+        target clause action == "select"
+        apply denyUnlessPermit
+        rule r1 {
+            permit
+            target clause subject.level > entity.level
+        }
+    }
+
+    export policySet Main {
+        target clause action == "select"
+        apply denyUnlessPermit
+        p1
+
+        policy p2 {
+        target clause action == "select"
+            apply denyUnlessPermit
+            rule r1 {
+                permit
+                target clause subject.level > 0
+            }
+        }
+
+    }
+}

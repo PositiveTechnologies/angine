@@ -1,0 +1,5 @@
+angine/*.pyc
+tests/*.pyc
+*.pyc
+.idea
+__pycache__

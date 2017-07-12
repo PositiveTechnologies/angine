@@ -1,0 +1,18 @@
+namespace example {
+    export policy Main {
+        target clause action == "GET"
+        apply denyOverrides
+        rule r1 {
+            permit
+            target clause subject.level > entity.level
+        }
+        rule r2 {
+            deny
+            target clause entity.path == "/admin/"
+        }
+        rule r3 {
+            deny
+            target clause subject.ip == "127.0.0.1"
+        }
+    }
+}

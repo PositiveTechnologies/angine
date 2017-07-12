@@ -1,0 +1,10 @@
+namespace example {
+    export policy Main {
+        target clause action == "select"
+        apply denyUnlessPermit
+        rule r1 {
+            permit
+            target clause subject.level > entity.level
+        }
+    }
+}

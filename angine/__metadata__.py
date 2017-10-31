@@ -1,5 +1,5 @@
 # Used for different help messages for CLI tools and package information
-__runtimes__ = ["python"]
+__runtimes__ = ["python", "java"]
 
 __title__ = 'aNgine'
 __version__ = '0.2.0'

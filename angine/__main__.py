@@ -65,8 +65,8 @@ def main(args) -> None:
     output_dir = args.output
     ####################################################
     # TODO: That guys should have runtime-specific name
-    interfaces_file = "ast.py"
-    decoder_file = "decoder.py"
+    interfaces_file = interfaces_filename[runtime]
+    decoder_file = decoder_filename[runtime]
     ###################################################
     json_scheme_file = "scheme.json"
 
@@ -101,6 +101,16 @@ def main(args) -> None:
         lua_runtime_file = policy["name"] + ".lua"
         with open(os.path.join(output_dir, lua_runtime_file), "w") as f:
             f.write(policy["lua"])
+
+interfaces_filename = {
+    "python" : "ast.py",
+    "java" : "AST.java"
+}
+
+decoder_filename = {
+    "python" : "decoder.py",
+    "java" : "Decoder.java"
+}
 
 
 if __name__ == "__main__":

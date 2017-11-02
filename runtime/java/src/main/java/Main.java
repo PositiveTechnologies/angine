@@ -1,7 +1,8 @@
 public class Main {
 
     public static void main(String[] args){
-        //Test.run(args);
-        TestGson.run();
+        //TestPIP.run();
+        Test.run(args);
+        //TestGson.run();
     }
 }

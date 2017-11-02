@@ -1,9 +1,20 @@
 package angine;
 
-import angine.model.Factory;
+import angine.generated.Decoder;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.github.fge.jackson.JsonLoader;
+import com.github.fge.jsonschema.core.exceptions.ProcessingException;
+import com.github.fge.jsonschema.core.report.ProcessingReport;
+import com.github.fge.jsonschema.main.JsonSchema;
+import com.github.fge.jsonschema.main.JsonSchemaFactory;
 
+import javax.annotation.Nonnull;
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,14 +47,11 @@ public class PIP {
      * Создает PIP. Аттрибуты загружаются из JsonText, предварительно проверяются на соответствие jsonSchema
      * @param jsonSchema
      * @param JsonText
-     * @param factory объект, способный восстанавливать Entities из json
+     * @param factory объект, способный восстанавливать AST из json
      * @return PIP
      */
-    @Deprecated
-    public PIP fromJson(String jsonSchema, String JsonText, Factory factory){
-        System.out.println("PIP.fromJson is incomplete");
-        return null;
-        /*
+    public static PIP fromJson(String jsonSchema, String JsonText, @Nonnull Decoder factory){
+
         JsonNode data;
         try {
             JsonNode schemaNode = JsonLoader.fromString(jsonSchema);
@@ -51,27 +59,24 @@ public class PIP {
             JsonSchemaFactory schemaFactory = JsonSchemaFactory.byDefault();
             JsonSchema schema = schemaFactory.getJsonSchema(schemaNode);
             ProcessingReport report = schema.validate(data);
-        } catch (IOException e){
-            e.printStackTrace();
-        } catch (ProcessingException e) {
+            if (report.isSuccess()){
+                return new PIP(factory.fromJson(JsonText));
+            } else {
+                System.out.println("NOO");
+            }
+        } catch (Exception e){
             e.printStackTrace();
         }
-        attrs = new HashMap<String, Identifiable>();
-
-        return new PIP(attrs);
-        */
-
+        return null;
     }
 
 
 
     private String getId(Object o){
         try {
-            Field field = o.getClass().getField("id");
-            return field.get(o).toString();
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
+            Method method = o.getClass().getMethod("id");
+            return (String) method.invoke(o);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;

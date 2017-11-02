@@ -1,4 +1,4 @@
-local lib = require('alfa')
+local lib = require('angine/alfa')
 local __test = lib.test
 local __subseteq = lib.subseteq
 local __issubseteq = lib.issubseteq
@@ -18,7 +18,7 @@ local __example = function(example)
             return actions.notapplicable
         end
         -- target end
-
+        
         -- r1 rule begin
         local function r1(ctx, actions, handlers)
             if not ctx.entity.level or not ctx.subject.level then
@@ -30,8 +30,8 @@ local __example = function(example)
             return actions.notapplicable
         end
         -- r1 rule end
-
-
+        
+        
         -- r2 rule begin
         local function r2(ctx, actions, handlers)
             if not ctx.entity.path then
@@ -43,8 +43,8 @@ local __example = function(example)
             return actions.notapplicable
         end
         -- r2 rule end
-
-
+        
+        
         -- r3 rule begin
         local function r3(ctx, actions, handlers)
             if not ctx.subject.ip then
@@ -56,8 +56,8 @@ local __example = function(example)
             return actions.notapplicable
         end
         -- r3 rule end
-
-
+        
+        
         -- denyoverrides rule-combining algorithm begin
         local atLeastOneError = false
         local atLeastOnePermit = false
@@ -82,10 +82,10 @@ local __example = function(example)
         end
         return actions.notapplicable
         -- denyoverrides rule-combining algorithm end
-
+        
     end
     -- example.Main policy end
-
+    
 end
 __example(example)
 -- example namespace end

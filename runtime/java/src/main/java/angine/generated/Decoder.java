@@ -10,6 +10,17 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * To override this class, you must override every createClass(JsonElement je) method.
+ * The easiest way to do it is to call create(JsonElement je, Type class) method
+ * example:
+ * @Override
+ * public Object createClass(JsonElement je){
+ *   return create(je, MyClass.class);
+ * }
+ * With MyClass you must override Class.
+ *
+ */
 public abstract class Decoder{
 
     private Gson gson;
@@ -31,22 +42,26 @@ public abstract class Decoder{
             if(str.equals("entity")){
                 currentObject = createEntity(element);
             }
+
+            if(str.equals("urlentity")){
+                currentObject = createUrlEntity(element);
+            }
+
             if(str.equals("subject")){
                 currentObject = createSubject(element);
             }
-            if (str.equals("urlentity")){
-                currentObject = createUrlEntity(element);
-            }
+
             String id = (String) currentObject.getClass().getMethod("id").invoke(currentObject);
             objects.put(id, currentObject);
         }
         return objects;
     }
 
-
     public abstract Object createEntity(JsonElement je);
-    public abstract Object createSubject(JsonElement je);
+
     public abstract Object createUrlEntity(JsonElement je);
+
+    public abstract Object createSubject(JsonElement je);
 
     public Object create(JsonElement je, Type type){
         return gson.fromJson(je, type);

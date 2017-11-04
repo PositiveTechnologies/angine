@@ -65,7 +65,7 @@ public class PDP {
         }
 
         if(formatResults){
-            return finalDecision;
+            return formatResponse(finalDecision, null);
         } else {
             return finalDecision;
         }

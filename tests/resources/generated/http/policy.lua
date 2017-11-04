@@ -21,7 +21,7 @@ local __example = function(example)
         
         -- r1 rule begin
         local function r1(ctx, actions, handlers)
-            if not ctx.entity.level or not ctx.subject.level then
+            if not ctx.subject.level or not ctx.entity.level then
                 return actions.indeterminate
             end
             if ( ctx.subject.level > ctx.entity.level ) then

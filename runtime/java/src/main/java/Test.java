@@ -1,38 +1,37 @@
 import angine.PDP;
 import angine.PIP;
 
+import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Scanner;
 
 
 public class Test {
 
 
-    public static String pathToLua = "/home/ivan/javafun/angine/runtime/java/src/main/resources/script.lua";
+    public static String pathToLua = "script.lua";
 
-    public static void run(String[] args){
+    public static String pathToEntities = "Entities.json";
+
+    public static String pathToSchema = "scheme.json";
+
+    public void run(){
         try {
-            String luaPolicy = readFile(pathToLua,Charset.defaultCharset());
+            String luaPolicy = readFile(pathToLua);
             PDP pdp = new PDP(luaPolicy);
             PIP pip = createTestPIP();
             testPermit(pip, pdp);
             testDeny(pip, pdp);
 
-        } catch (IOException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
 
-    private static void testPermit(PIP pip, PDP pdp) throws Exception {
+    private void testPermit(PIP pip, PDP pdp) throws Exception {
         List<String> tags = new ArrayList<String>();
         Bindings.MyUrlEntity urlEntity = new Bindings.MyUrlEntity("/index.html",tags, 5);
         List<Object> entities = new ArrayList<Object>();
@@ -55,19 +54,24 @@ public class Test {
         }
     }
 
-    private static void testDeny(PIP pip, PDP pdp) throws Exception {
-        List<String> tags = new ArrayList<String>();
-        Bindings.MyUrlEntity urlEntity = new Bindings.MyUrlEntity("/admin/",tags, 10);
+    private void testDeny(PIP pip, PDP pdp) throws Exception {
         List<Object> entities = new ArrayList<Object>();
-        entities.add(urlEntity);
+        List<String> tags = new ArrayList<String>();
         List<String> roles = new ArrayList<String>();
         roles.add("user");
+
+
+        Bindings.MyUrlEntity urlEntity = new Bindings.MyUrlEntity("/admin/",tags, 10);
+        entities.add(urlEntity);
+
+        Bindings.MySubject subject =  new Bindings.MySubject("user1", tags , roles, 10);
+
         PIP.RequestContext request = new PIP.RequestContext(
-                new Bindings.MySubject("user1", tags , roles, 10),
+                subject,
                 entities,
-                "GET");
-
-
+                "GET"
+        );
+        
         List<PIP.EvaluationContext> evaluationContexts = pip.createContext(request);
         Integer result = pdp.evaluate(evaluationContexts,false);
         if(!result.equals(PDP.PERMIT)){
@@ -77,122 +81,27 @@ public class Test {
         }
     }
 
-    private static PIP createTestPIP(){
-
-        String json = "{\n" +
-                "    \"entities\" :\n" +
-                "        [\n" +
-                "            { \"type\" : \"subject\", \"name\" : \"user1\", \"tags\" : [],  \"roles\" : [], \"level\" : 10},\n" +
-                "            { \"type\" : \"urlentity\", \"path\" : \"/index.html\", \"tags\" : [], \"level\" : 5},\n" +
-                "            { \"type\" : \"urlentity\", \"path\" : \"/admin/\", \"tags\" : [], \"level\" : 10}\n" +
-                "        ]\n" +
-                "}";
-
-        String schema = "{\n" +
-                "    \"$schema\": \"http://json-schema.org/draft-04/schema#\",\n" +
-                "    \"definitions\": {\n" +
-                "        \"builtins.Entity\": {\n" +
-                "            \"type\": \"object\",\n" +
-                "            \"properties\": {\n" +
-                "                \"type\": {\n" +
-                "                    \"type\": \"string\"\n" +
-                "                },\n" +
-                "                \"id\": {\n" +
-                "                    \"type\": \"string\"\n" +
-                "                }\n" +
-                "            },\n" +
-                "            \"additionalProperties\": false\n" +
-                "        },\n" +
-                "        \"builtins.Subject\": {\n" +
-                "            \"type\": \"object\",\n" +
-                "            \"properties\": {\n" +
-                "                \"type\": {\n" +
-                "                    \"type\": \"string\"\n" +
-                "                },\n" +
-                "                \"id\": {\n" +
-                "                    \"type\": \"string\"\n" +
-                "                },\n" +
-                "                \"name\": {\n" +
-                "                    \"type\": \"string\"\n" +
-                "                },\n" +
-                "                \"roles\": {\n" +
-                "                    \"type\": \"array\",\n" +
-                "                    \"items\": {\n" +
-                "                        \"type\": \"string\"\n" +
-                "                    }\n" +
-                "                },\n" +
-                "                \"level\": {\n" +
-                "                    \"type\": \"integer\"\n" +
-                "                },\n" +
-                "                \"tags\": {\n" +
-                "                    \"type\": \"array\",\n" +
-                "                    \"items\": {\n" +
-                "                        \"type\": \"string\"\n" +
-                "                    }\n" +
-                "                },\n" +
-                "                \"ip\": {\n" +
-                "                    \"type\": \"string\"\n" +
-                "                }\n" +
-                "            },\n" +
-                "            \"additionalProperties\": false\n" +
-                "        },\n" +
-                "        \"builtins.UrlEntity\": {\n" +
-                "            \"type\": \"object\",\n" +
-                "            \"properties\": {\n" +
-                "                \"type\": {\n" +
-                "                    \"type\": \"string\"\n" +
-                "                },\n" +
-                "                \"id\": {\n" +
-                "                    \"type\": \"string\"\n" +
-                "                },\n" +
-                "                \"path\": {\n" +
-                "                    \"type\": \"string\"\n" +
-                "                },\n" +
-                "                \"level\": {\n" +
-                "                    \"type\": \"integer\"\n" +
-                "                },\n" +
-                "                \"tags\": {\n" +
-                "                    \"type\": \"array\",\n" +
-                "                    \"items\": {\n" +
-                "                        \"type\": \"string\"\n" +
-                "                    }\n" +
-                "                }\n" +
-                "            },\n" +
-                "            \"additionalProperties\": false\n" +
-                "        }\n" +
-                "    },\n" +
-                "    \"type\": \"object\",\n" +
-                "    \"properties\": {\n" +
-                "        \"entities\": {\n" +
-                "            \"type\": \"array\",\n" +
-                "            \"items\": {\n" +
-                "                \"oneOf\": [\n" +
-                "                    {\n" +
-                "                        \"$ref\": \"#/definitions/builtins.Entity\"\n" +
-                "                    },\n" +
-                "                    {\n" +
-                "                        \"$ref\": \"#/definitions/builtins.UrlEntity\"\n" +
-                "                    },\n" +
-                "                    {\n" +
-                "                        \"$ref\": \"#/definitions/builtins.Subject\"\n" +
-                "                    }\n" +
-                "                ]\n" +
-                "            }\n" +
-                "        }\n" +
-                "    },\n" +
-                "    \"required\": [\n" +
-                "        \"entities\"\n" +
-                "    ],\n" +
-                "    \"additionalProperties\": false\n" +
-                "}";
+    private PIP createTestPIP(){
+        String json = readFile(pathToEntities);
+        String schema = readFile(pathToSchema);
         return PIP.fromJson(schema,json, new Bindings.MyFactory());
     }
 
-    static String readFile(String path, Charset encoding)
-            throws IOException
-    {
-        byte[] encoded = Files.readAllBytes(Paths.get(path));
-        return new String(encoded, encoding);
+
+    private String readFile(String path) {
+        StringBuilder result = new StringBuilder("");
+        File file = new File(getClass().getClassLoader().getResource(path).getFile());
+        try {
+            Scanner scanner = new Scanner(file);
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                result.append(line).append("\n");
+            }
+            scanner.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result.toString();
     }
 
 

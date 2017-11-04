@@ -3,18 +3,14 @@ package angine;
 import angine.generated.Decoder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.fge.jackson.JsonLoader;
-import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.github.fge.jsonschema.core.report.ProcessingReport;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
+import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +20,10 @@ public class PIP {
     public Map<String, Object> attrs;
 
 
+    /**
+     * creates PIP from attributes.
+     * @param attrs Map from object.id to object
+     */
     public PIP(Map<String, Object> attrs){
         this.attrs = attrs;
     }
@@ -44,34 +44,34 @@ public class PIP {
 
 
     /**
-     * Создает PIP. Аттрибуты загружаются из JsonText, предварительно проверяются на соответствие jsonSchema
-     * @param jsonSchema
-     * @param JsonText
-     * @param factory объект, способный восстанавливать AST из json
+     * Creates PIP. Attributes are loaded from jsonText, wich must match jsonSchema
+     * @param factory object, extended from generated Decoder
      * @return PIP
      */
-    public static PIP fromJson(String jsonSchema, String JsonText, @Nonnull Decoder factory){
-
-        JsonNode data;
+    @Nullable
+    public static PIP fromJson(@Nonnull String jsonSchema,@Nonnull String jsonText, @Nonnull Decoder factory){
         try {
+            JsonNode data;
             JsonNode schemaNode = JsonLoader.fromString(jsonSchema);
-            data = JsonLoader.fromString(JsonText);
+            data = JsonLoader.fromString(jsonText);
             JsonSchemaFactory schemaFactory = JsonSchemaFactory.byDefault();
             JsonSchema schema = schemaFactory.getJsonSchema(schemaNode);
             ProcessingReport report = schema.validate(data);
-            if (report.isSuccess()){
-                return new PIP(factory.fromJson(JsonText));
+            if (report.isSuccess()) {
+                return new PIP(factory.fromJson(jsonText));
             } else {
-                System.out.println("NOO");
+                return null;
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
 
 
-
+    /**
+     * Calls object.id() method
+     */
     private String getId(Object o){
         try {
             Method method = o.getClass().getMethod("id");

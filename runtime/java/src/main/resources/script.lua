@@ -1,4 +1,4 @@
-local lib = require('alfa')
+local lib = require('angine/alfa')
 local __test = lib.test
 local __subseteq = lib.subseteq
 local __issubseteq = lib.issubseteq

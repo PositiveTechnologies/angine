@@ -1,0 +1,8 @@
+{
+  "entities" :
+  [
+    { "type" : "subject", "name" : "user1", "tags" : [],  "roles" : [], "level" : 10},
+    { "type" : "urlentity", "path" : "/index.html", "tags" : [], "level" : 5},
+    { "type" : "urlentity", "path" : "/admin/", "tags" : [], "level" : 10}
+  ]
+}

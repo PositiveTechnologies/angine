@@ -4,7 +4,5 @@ tests/*.pyc
 .idea
 __pycache__
 
-runtime/java/.idea
-runtime/java/target
-runtime/java/pom.xml
-runtime/java/luatest.iml
+runtime/java/angine/.idea
+runtime/java/test/.idea

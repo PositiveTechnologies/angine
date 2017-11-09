@@ -1,6 +1,5 @@
 package angine;
 
-import angine.generated.Decoder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.fge.jackson.JsonLoader;
 import com.github.fge.jsonschema.core.report.ProcessingReport;
@@ -49,7 +48,7 @@ public class PIP {
      * @return PIP
      */
     @Nullable
-    public static PIP fromJson(@Nonnull String jsonSchema,@Nonnull String jsonText, @Nonnull Decoder factory){
+    public static PIP fromJson(@Nonnull String jsonSchema,@Nonnull String jsonText, @Nonnull Object factory){
         try {
             JsonNode data;
             JsonNode schemaNode = JsonLoader.fromString(jsonSchema);
@@ -58,10 +57,24 @@ public class PIP {
             JsonSchema schema = schemaFactory.getJsonSchema(schemaNode);
             ProcessingReport report = schema.validate(data);
             if (report.isSuccess()) {
-                return new PIP(factory.fromJson(jsonText));
+                return new PIP(callFromJson(factory,jsonText));
             } else {
                 return null;
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    /**
+     * calls o.fromJson(jsonText)
+     */
+    private static Map<String, Object> callFromJson(Object o, String jsonText){
+        try {
+            Method method = o.getClass().getMethod("fromJson",String.class);
+            return (Map<String, Object>) method.invoke(o, jsonText);
         } catch (Exception e) {
             e.printStackTrace();
         }

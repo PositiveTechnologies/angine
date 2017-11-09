@@ -1,6 +1,6 @@
-import angine.generated.AST;
-import angine.generated.Decoder;
 import com.google.gson.JsonElement;
+import generated.AST;
+import generated.Decoder;
 
 import java.util.List;
 
@@ -38,7 +38,7 @@ public class Bindings {
         }
     }
 
-    public static class MyFactory extends Decoder{
+    public static class MyFactory extends Decoder {
 
 
         public Object createEntity(JsonElement je) {

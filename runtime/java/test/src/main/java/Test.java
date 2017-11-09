@@ -1,8 +1,6 @@
-import angine.PDP;
 import angine.PIP;
+import angine.PDP;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -11,7 +9,7 @@ import java.util.Scanner;
 public class Test {
 
 
-    public static String pathToLua = "script.lua";
+    public static String pathToLua = "policy.lua";
 
     public static String pathToEntities = "Entities.json";
 
@@ -19,6 +17,7 @@ public class Test {
 
     public void run(){
         try {
+
             String luaPolicy = readFile(pathToLua);
             PDP pdp = new PDP(luaPolicy);
             PIP pip = createTestPIP();
@@ -71,7 +70,7 @@ public class Test {
                 entities,
                 "GET"
         );
-        
+
         List<PIP.EvaluationContext> evaluationContexts = pip.createContext(request);
         Integer result = pdp.evaluate(evaluationContexts,false);
         if(!result.equals(PDP.PERMIT)){
@@ -82,7 +81,7 @@ public class Test {
     }
 
     private PIP createTestPIP(){
-        String json = readFile(pathToEntities);
+        String json  = readFile(pathToEntities);
         String schema = readFile(pathToSchema);
         return PIP.fromJson(schema,json, new Bindings.MyFactory());
     }
@@ -90,17 +89,13 @@ public class Test {
 
     private String readFile(String path) {
         StringBuilder result = new StringBuilder("");
-        File file = new File(getClass().getClassLoader().getResource(path).getFile());
-        try {
-            Scanner scanner = new Scanner(file);
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                result.append(line).append("\n");
-            }
-            scanner.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        Scanner scanner = new Scanner(ClassLoader.getSystemResourceAsStream(path));
+        while (scanner.hasNextLine()) {
+            String line = scanner.nextLine();
+            result.append(line).append("\n");
         }
+        scanner.close();
+
         return result.toString();
     }
 

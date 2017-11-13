@@ -1,3 +1,5 @@
+import angine.IIdentifiable;
+import angine.INodesDecoder;
 import com.google.gson.JsonElement;
 import generated.AST;
 import generated.Decoder;
@@ -7,7 +9,7 @@ import java.util.List;
 
 public class Bindings {
 
-    public static class MySubject extends AST.Subject{
+    public static class MySubject extends AST.Subject implements IIdentifiable{
 
         public MySubject(String name, List<String> tags, List<String> roles, int level){
             this.name = name;
@@ -25,7 +27,7 @@ public class Bindings {
         }
     }
 
-    public static class MyUrlEntity extends AST.UrlEntity{
+    public static class MyUrlEntity extends AST.UrlEntity implements IIdentifiable{
 
         public MyUrlEntity(String path, List<String> tags, int level){
             this.path = path;
@@ -38,8 +40,7 @@ public class Bindings {
         }
     }
 
-    public static class MyFactory extends Decoder {
-
+    public static class MyFactory extends Decoder implements INodesDecoder {
 
         public Object createEntity(JsonElement je) {
             return create(je, AST.Entity.class);
@@ -54,3 +55,4 @@ public class Bindings {
         }
     }
 }
+

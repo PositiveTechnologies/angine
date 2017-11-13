@@ -1,3 +1,4 @@
+import angine.IIdentifiable;
 import angine.PIP;
 import angine.PDP;
 
@@ -33,7 +34,7 @@ public class Test {
     private void testPermit(PIP pip, PDP pdp) throws Exception {
         List<String> tags = new ArrayList<String>();
         Bindings.MyUrlEntity urlEntity = new Bindings.MyUrlEntity("/index.html",tags, 5);
-        List<Object> entities = new ArrayList<Object>();
+        List<IIdentifiable> entities = new ArrayList<IIdentifiable>();
         entities.add(urlEntity);
 
 
@@ -45,7 +46,7 @@ public class Test {
                 "GET");
 
         List<PIP.EvaluationContext> evaluationContexts = pip.createContext(request);
-        Integer result = pdp.evaluate(evaluationContexts,false);
+        Integer result = (Integer) pdp.evaluate(evaluationContexts,false);
         if(result.equals(PDP.PERMIT)){
             System.out.println("permit success!");
         } else {
@@ -54,7 +55,7 @@ public class Test {
     }
 
     private void testDeny(PIP pip, PDP pdp) throws Exception {
-        List<Object> entities = new ArrayList<Object>();
+        List<IIdentifiable> entities = new ArrayList<IIdentifiable>();
         List<String> tags = new ArrayList<String>();
         List<String> roles = new ArrayList<String>();
         roles.add("user");
@@ -72,7 +73,7 @@ public class Test {
         );
 
         List<PIP.EvaluationContext> evaluationContexts = pip.createContext(request);
-        Integer result = pdp.evaluate(evaluationContexts,false);
+        Integer result = (Integer) pdp.evaluate(evaluationContexts,false);
         if(!result.equals(PDP.PERMIT)){
             System.out.println("deny success!");
         } else {
@@ -83,7 +84,12 @@ public class Test {
     private PIP createTestPIP(){
         String json  = readFile(pathToEntities);
         String schema = readFile(pathToSchema);
-        return PIP.fromJson(schema,json, new Bindings.MyFactory());
+        try {
+            return PIP.fromJson(schema,json, new Bindings.MyFactory());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 
@@ -101,3 +107,4 @@ public class Test {
 
 
 }
+

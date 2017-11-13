@@ -7,7 +7,9 @@ import org.luaj.vm2.lib.jse.JsePlatform;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class PDP {
@@ -16,6 +18,13 @@ public class PDP {
     public static int DENY = 1;
     public static int NOT_APPLICABLE = 2;
     public static int INDETERMINATE = 3;
+
+    private static final Map<Integer, String> name = new HashMap<Integer, String>(){{
+       put(PERMIT, "permit");
+       put(DENY, "deny");
+       put(NOT_APPLICABLE, "not applicable");
+       put(INDETERMINATE, "indeterminate");
+    }};
 
 
 
@@ -47,7 +56,7 @@ public class PDP {
     }
 
 
-    public Integer evaluate(List<PIP.EvaluationContext> contextList, boolean formatResults){
+    public Object evaluate(List<PIP.EvaluationContext> contextList, boolean formatResults){
 
         List<Integer> decisions = new ArrayList<Integer>();
         for(PIP.EvaluationContext context : contextList){
@@ -72,11 +81,13 @@ public class PDP {
     }
 
 
-    /**
-     * Incorrect function
-     */
-    public static int formatResponse( Integer decision, @Nullable String status) {
+
+    private String formatResponse( Integer decision, @Nullable String status) {
         System.out.println("Not implemented yet, please dont call this func");
-        return decision;
+        return "{\n" +
+                    "\"result\": {\n"                             +
+                    "\"decision\": " + name.get(decision) +",\n"  +
+                    "\"status\": NONE \n"                         +
+                "}";
     }
 }

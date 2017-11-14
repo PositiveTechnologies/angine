@@ -74,7 +74,7 @@ def test_smoke_error_policy():
     )
     evaluation_ctxs = pip.create_ctx(request)
     response = pdp.evaluate(evaluation_ctxs)
-    assert response == Decision.Indeterminate
+    assert response.results[0].decision == Decision.Indeterminate
 
     policy = Policy(ERROR_UPDATE_POLICY)
     pdp = PDP(policy.text)
@@ -100,7 +100,7 @@ def test_smoke_error_policy():
     )
     evaluation_ctxs = pip.create_ctx(request)
     response = pdp.evaluate(evaluation_ctxs)
-    assert response == Decision.NotApplicable
+    assert response.results[0].decision == Decision.NotApplicable
 
 
 def test_smoke_policy_set():
@@ -128,7 +128,7 @@ def test_smoke_policy_set():
     )
     evaluation_ctxs = pip.create_ctx(request)
     response = pdp.evaluate(evaluation_ctxs)
-    assert response == Decision.Permit
+    assert response.results[0].decision == Decision.Permit
 
     request = RequestCtx(
         MySubject("user2"),
@@ -140,7 +140,7 @@ def test_smoke_policy_set():
     )
     evaluation_ctxs = pip.create_ctx(request)
     response = pdp.evaluate(evaluation_ctxs)
-    assert response == Decision.Permit
+    assert response.results[0].decision == Decision.Permit
 
 
 def test_dynamic_property():
@@ -168,7 +168,7 @@ def test_dynamic_property():
     )
     evaluation_ctxs = pip.create_ctx(request)
     response = pdp.evaluate(evaluation_ctxs)
-    assert response == Decision.Deny
+    assert response.results[0].decision == Decision.Deny
 
     request = RequestCtx(
         admin,
@@ -177,4 +177,4 @@ def test_dynamic_property():
     )
     evaluation_ctxs = pip.create_ctx(request)
     response = pdp.evaluate(evaluation_ctxs)
-    assert response == Decision.Permit
+    assert response.results[0].decision == Decision.Permit

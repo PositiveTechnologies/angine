@@ -108,7 +108,7 @@ def test_features():
     assert evaluation_ctxs[1].action == "select"
     pdp = PDP(policy.text)
     response = pdp.evaluate(evaluation_ctxs)
-    assert response == Decision.Indeterminate
+    assert response.results[0].decision == Decision.Indeterminate
 
     request = RequestCtx(
         MySubject("user2"),
@@ -120,4 +120,4 @@ def test_features():
     )
     evaluation_ctxs = pip.create_ctx(request)
     response = pdp.evaluate(evaluation_ctxs)
-    assert response == Decision.Permit
+    assert response.results[0].decision == Decision.Permit

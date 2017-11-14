@@ -70,7 +70,7 @@ def test_http():
     )
     evaluation_ctxs = pip.create_ctx(request)
     response = pdp.evaluate(evaluation_ctxs)
-    assert response == Decision.Permit
+    assert response.results[0].decision == Decision.Permit
 
     request = RequestCtx(
         MySubject("user2"),
@@ -81,7 +81,7 @@ def test_http():
     )
     evaluation_ctxs = pip.create_ctx(request)
     response = pdp.evaluate(evaluation_ctxs)
-    assert response == Decision.Deny
+    assert response.results[0].decision == Decision.Deny
 
     request = RequestCtx(
         MySubject("admin"),
@@ -92,4 +92,4 @@ def test_http():
     )
     evaluation_ctxs = pip.create_ctx(request)
     response = pdp.evaluate(evaluation_ctxs)
-    assert response == Decision.Deny
+    assert response.results[0].decision == Decision.Deny

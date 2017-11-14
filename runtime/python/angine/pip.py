@@ -1,37 +1,7 @@
 import json
 import jsonschema
 import typing
-
-
-class RequestCtx(object):
-    """ Request context is the one we have at PDP (in our case in PDP before the
-        call to Lua runtime). It contains all the necessary information about the
-        action we are going to deny or permit. Here necessary means all the IDs
-        or info needed by PIP to resolve all other entity attributes
-
-        :param subject: an object which describes the one who wants to perform an action
-        :param entities: list of objects describing entities affected by the subject's
-            action
-        :param action: an object which describes subject's action
-    """
-    def __init__(self, subject, entities, action):
-        self.subject = subject
-        self.entities = entities
-        self.action = action
-
-
-class EvaluationCtx(object):
-    """ Evaluation context is build from a request context for every single entity
-        by just filling up all the attributes resolving them via PIP.
-
-        :param subject: an object which describes the one who wants to perform an action
-        :param entities: an object which describes an entity affected by the action
-        :param action: an object which describes subject's action
-    """
-    def __init__(self, subject, entity, action):
-        self.subject = subject
-        self.entity = entity
-        self.action = action
+from .context import RequestCtx, EvaluationCtx
 
 
 class PIP(object):

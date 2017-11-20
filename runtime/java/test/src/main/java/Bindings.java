@@ -1,5 +1,5 @@
-import angine.IIdentifiable;
-import angine.INodesDecoder;
+import angine.util.IIdentifiable;
+import angine.util.INodesDecoder;
 import com.google.gson.JsonElement;
 import generated.AST;
 import generated.Decoder;
@@ -55,4 +55,3 @@ public class Bindings {
         }
     }
 }
-

@@ -1,5 +1,9 @@
 package angine;
 
+import angine.context.EvaluationContext;
+import angine.context.RequestContext;
+import angine.util.IIdentifiable;
+import angine.util.INodesDecoder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.fge.jackson.JsonLoader;
 import com.github.fge.jsonschema.core.report.ProcessingReport;
@@ -68,33 +72,5 @@ public class PIP {
             return null;
         }
     }
-
-
-    public static class RequestContext{
-
-        public IIdentifiable subject;
-        public List<IIdentifiable> entities;
-        public Object action;
-
-        public RequestContext(IIdentifiable subject, List<IIdentifiable> entities, Object action) {
-            this.subject = subject;
-            this.entities = entities;
-            this.action = action;
-        }
-    }
-
-
-    public static class EvaluationContext{
-        public IIdentifiable subject;
-        public IIdentifiable entity;
-        public Object action;
-
-        public EvaluationContext(IIdentifiable subject, IIdentifiable entity, Object action){
-            this.subject = subject;
-            this.entity = entity;
-            this.action = action;
-        }
-    }
-
 
 }

@@ -14,12 +14,13 @@ public enum Decision{
         this.value = i;
     }
 
-    public static Decision fromInt(int i){
+    public static Decision fromInt(int i) throws IllegalArgumentException{
         for (Decision decision : Decision.values()){
             if (decision.value == i){
                 return decision;
             }
         }
-        return Decision.Indeterminate;
+        throw new IllegalArgumentException("argument of function must be one of PDP's decision");
     }
 }
+

@@ -74,8 +74,8 @@ def test_http_api():
         ],
         "GET"
     )
-    evaluation_ctxs = pip.create_ctx(request)
-    response = pdp.evaluate(evaluation_ctxs)
+    evaluation_ctx = pip.create_ctx(request)
+    response = pdp.evaluate(evaluation_ctx)
     assert response.results[0].decision == Decision.Permit
 
     # Permit admin to index.html
@@ -86,8 +86,8 @@ def test_http_api():
         ],
         "GET"
     )
-    evaluation_ctxs = pip.create_ctx(request)
-    response = pdp.evaluate(evaluation_ctxs)
+    evaluation_ctx = pip.create_ctx(request)
+    response = pdp.evaluate(evaluation_ctx)
     assert response.results[0].decision == Decision.Permit
 
     # Permit user to index.html
@@ -98,8 +98,8 @@ def test_http_api():
         ],
         "GET"
     )
-    evaluation_ctxs = pip.create_ctx(request)
-    response = pdp.evaluate(evaluation_ctxs)
+    evaluation_ctx = pip.create_ctx(request)
+    response = pdp.evaluate(evaluation_ctx)
     assert response.results[0].decision == Decision.Permit
 
     # Deny non-existent user to index.html
@@ -110,8 +110,8 @@ def test_http_api():
         ],
         "GET"
     )
-    evaluation_ctxs = pip.create_ctx(request)
-    response = pdp.evaluate(evaluation_ctxs)
+    evaluation_ctx = pip.create_ctx(request)
+    response = pdp.evaluate(evaluation_ctx)
     assert response.results[0].decision == Decision.Deny
 
     # Permit admin to motd via POST only
@@ -122,8 +122,8 @@ def test_http_api():
         ],
         "POST"
     )
-    evaluation_ctxs = pip.create_ctx(request)
-    response = pdp.evaluate(evaluation_ctxs)
+    evaluation_ctx = pip.create_ctx(request)
+    response = pdp.evaluate(evaluation_ctx)
     assert response.results[0].decision == Decision.Permit
 
     # Deny guest to motd via GET
@@ -134,8 +134,8 @@ def test_http_api():
         ],
         "GET"
     )
-    evaluation_ctxs = pip.create_ctx(request)
-    response = pdp.evaluate(evaluation_ctxs)
+    evaluation_ctx = pip.create_ctx(request)
+    response = pdp.evaluate(evaluation_ctx)
     assert response.results[0].decision == Decision.Deny
 
     # Permit user to motd
@@ -146,8 +146,8 @@ def test_http_api():
         ],
         "GET"
     )
-    evaluation_ctxs = pip.create_ctx(request)
-    response = pdp.evaluate(evaluation_ctxs)
+    evaluation_ctx = pip.create_ctx(request)
+    response = pdp.evaluate(evaluation_ctx)
     assert response.results[0].decision == Decision.Permit
 
     # Deny non-existent user to motd
@@ -158,8 +158,8 @@ def test_http_api():
         ],
         "POST"
     )
-    evaluation_ctxs = pip.create_ctx(request)
-    response = pdp.evaluate(evaluation_ctxs)
+    evaluation_ctx = pip.create_ctx(request)
+    response = pdp.evaluate(evaluation_ctx)
     assert response.results[0].decision == Decision.Deny
 
     # Deny non-existent user to motd
@@ -170,8 +170,8 @@ def test_http_api():
         ],
         "GET"
     )
-    evaluation_ctxs = pip.create_ctx(request)
-    response = pdp.evaluate(evaluation_ctxs)
+    evaluation_ctx = pip.create_ctx(request)
+    response = pdp.evaluate(evaluation_ctx)
     assert response.results[0].decision == Decision.Deny
 
     # Permit local access to stats via GET
@@ -182,8 +182,8 @@ def test_http_api():
         ],
         "GET"
     )
-    evaluation_ctxs = pip.create_ctx(request)
-    response = pdp.evaluate(evaluation_ctxs)
+    evaluation_ctx = pip.create_ctx(request)
+    response = pdp.evaluate(evaluation_ctx)
     assert response.results[0].decision == Decision.Permit
 
     # Deny local access to stats via POST
@@ -194,8 +194,8 @@ def test_http_api():
         ],
         "POST"
     )
-    evaluation_ctxs = pip.create_ctx(request)
-    response = pdp.evaluate(evaluation_ctxs)
+    evaluation_ctx = pip.create_ctx(request)
+    response = pdp.evaluate(evaluation_ctx)
     assert response.results[0].decision == Decision.Deny
 
     # Deny access to stats
@@ -206,9 +206,9 @@ def test_http_api():
         ],
         "GET"
     )
-    evaluation_ctxs = pip.create_ctx(request)
-    response = pdp.evaluate(evaluation_ctxs)
-    assert response == Decision.Deny
+    evaluation_ctx = pip.create_ctx(request)
+    response = pdp.evaluate(evaluation_ctx)
+    assert response.results[0].decision == Decision.Deny
 
     # Deny access to stats for non-existent users
     request = RequestCtx(
@@ -218,6 +218,6 @@ def test_http_api():
         ],
         "GET"
     )
-    evaluation_ctxs = pip.create_ctx(request)
-    response = pdp.evaluate(evaluation_ctxs)
+    evaluation_ctx = pip.create_ctx(request)
+    response = pdp.evaluate(evaluation_ctx)
     assert response.results[0].decision == Decision.Deny

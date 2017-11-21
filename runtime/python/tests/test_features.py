@@ -96,18 +96,18 @@ def test_features():
         ],
         "select"
     )
-    evaluation_ctxs = pip.create_ctx(request)
-    assert len(evaluation_ctxs) == 2
-    assert evaluation_ctxs[0].subject.level == 10
-    assert evaluation_ctxs[0].entity.level == 20
-    assert evaluation_ctxs[0].entity.tags == ["secret", "nonsecret"]
-    assert evaluation_ctxs[0].action == "select"
-    assert evaluation_ctxs[1].subject.level == 10
-    assert evaluation_ctxs[1].entity.level == 5
-    assert evaluation_ctxs[1].entity.tags == ["secret"]
-    assert evaluation_ctxs[1].action == "select"
+    evaluation_ctx = pip.create_ctx(request)
+    assert len(evaluation_ctx.access_requests) == 2
+    assert evaluation_ctx.access_requests[0].subject.level == 10
+    assert evaluation_ctx.access_requests[0].entity.level == 20
+    assert evaluation_ctx.access_requests[0].entity.tags == ["secret", "nonsecret"]
+    assert evaluation_ctx.access_requests[0].action == "select"
+    assert evaluation_ctx.access_requests[1].subject.level == 10
+    assert evaluation_ctx.access_requests[1].entity.level == 5
+    assert evaluation_ctx.access_requests[1].entity.tags == ["secret"]
+    assert evaluation_ctx.access_requests[1].action == "select"
     pdp = PDP(policy.text)
-    response = pdp.evaluate(evaluation_ctxs)
+    response = pdp.evaluate(evaluation_ctx)
     assert response.results[0].decision == Decision.Indeterminate
 
     request = RequestCtx(

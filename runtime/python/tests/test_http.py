@@ -68,8 +68,8 @@ def test_http():
         ],
         "GET"
     )
-    evaluation_ctxs = pip.create_ctx(request)
-    response = pdp.evaluate(evaluation_ctxs)
+    evaluation_ctx = pip.create_ctx(request)
+    response = pdp.evaluate(evaluation_ctx)
     assert response.results[0].decision == Decision.Permit
 
     request = RequestCtx(
@@ -79,8 +79,8 @@ def test_http():
         ],
         "GET"
     )
-    evaluation_ctxs = pip.create_ctx(request)
-    response = pdp.evaluate(evaluation_ctxs)
+    evaluation_ctx = pip.create_ctx(request)
+    response = pdp.evaluate(evaluation_ctx)
     assert response.results[0].decision == Decision.Deny
 
     request = RequestCtx(
@@ -90,6 +90,6 @@ def test_http():
         ],
         "GET"
     )
-    evaluation_ctxs = pip.create_ctx(request)
-    response = pdp.evaluate(evaluation_ctxs)
+    evaluation_ctx = pip.create_ctx(request)
+    response = pdp.evaluate(evaluation_ctx)
     assert response.results[0].decision == Decision.Deny

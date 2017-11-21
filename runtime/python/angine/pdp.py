@@ -1,11 +1,11 @@
 import lupa
-import typing
+from typing import List
 from .handlers import *
 from .context import ResponseCtx, EvaluationCtx
-from .results import Decision, Result
+from .results import Decision, Status, Result, AbstractResult
 
 
-class PDP(object):
+class PDP:
     LUA_ENTRY = "__main"
 
     def __init__(self, lua_policy: str):
@@ -35,13 +35,14 @@ class PDP(object):
         else:
             raise ValueError("ALFA policy entry point not found")
 
-    def evaluate(self, ctx_list: typing.List[EvaluationCtx]) -> ResponseCtx:
+    def evaluate(self, evaluation_ctx: EvaluationCtx) -> ResponseCtx:
         """ Evaluates the @self.lua_policy for all given contexts
 
-        :param ctx_list: list of EvaluationCtx to pass to the policy
+        :param evaluation_ctx: context, containing all necessary information for evaluation
         :return if @format_results to True returns list of decisions in a format
             described in `self.get_response` otherwise returns list of Decision enums
         """
+        ctx_list = evaluation_ctx.access_requests
         handlers = Handlers()
         results = [
             Result(
@@ -50,4 +51,21 @@ class PDP(object):
                 )
             ) for ctx in ctx_list
         ]
-        return ResponseCtx(results)
+        if evaluation_ctx.combined_decision:
+            return ResponseCtx(
+                [PDP.get_xacml3_combined_decision(results)]
+            )
+        else:
+            return ResponseCtx(results)
+
+    @staticmethod
+    def get_xacml3_combined_decision(results: List[AbstractResult]) -> AbstractResult:
+        """
+        Implements XACML3 Multiple Decision Profile combining method.
+        """
+        if all(result.decision == results[0].decision for result in results):
+            return results[0]
+        else:
+            return AbstractResult(
+                Decision.Indeterminate, Status(Status.Code.ProcessingError)
+            )

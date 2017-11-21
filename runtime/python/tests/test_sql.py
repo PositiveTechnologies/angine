@@ -72,8 +72,8 @@ def test_smoke_error_policy():
         ],
         "select"
     )
-    evaluation_ctxs = pip.create_ctx(request)
-    response = pdp.evaluate(evaluation_ctxs)
+    evaluation_ctx = pip.create_ctx(request)
+    response = pdp.evaluate(evaluation_ctx)
     assert response.results[0].decision == Decision.Indeterminate
 
     policy = Policy(ERROR_UPDATE_POLICY)
@@ -98,8 +98,8 @@ def test_smoke_error_policy():
         ],
         "select"
     )
-    evaluation_ctxs = pip.create_ctx(request)
-    response = pdp.evaluate(evaluation_ctxs)
+    evaluation_ctx = pip.create_ctx(request)
+    response = pdp.evaluate(evaluation_ctx)
     assert response.results[0].decision == Decision.NotApplicable
 
 

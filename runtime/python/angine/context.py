@@ -3,7 +3,7 @@ from typing import List
 from .results import Decision, Status, AbstractResult, Result
 
 
-class RequestCtx(object):
+class RequestCtx:
     """ Request context is the one we have at PDP (in our case in PDP before the
         call to Lua runtime). It contains all the necessary information about the
         action we are going to deny or permit. Here necessary means all the IDs
@@ -13,31 +13,38 @@ class RequestCtx(object):
         :param entities: list of objects describing entities affected by the subject's
             action
         :param action: an object which describes subject's action
+        :param combined_decision: returned response must contain combined decision
     """
-    def __init__(self, subject, entities, action):
+    def __init__(self, subject, entities, action, combined_decision=True) -> None:
         self.subject = subject
         self.entities = entities
         self.action = action
+        self.combined_decision = combined_decision
 
 
-class EvaluationCtx(object):
-    """ Evaluation context is build from a request context for every single entity
+class AccessRequest:
+    """ It is created from a request context for every (subject, entity, action) triad
         by just filling up all the attributes resolving them via PIP.
 
         :param subject: an object which describes the one who wants to perform an action
-        :param entities: an object which describes an entity affected by the action
-        :param action: an object which describes subject's action
+        :param entity: an object which describes an entity affected by the action
+        :param action: an object which describes the subject on the object action
     """
-    def __init__(self, subject, entity, action):
+    def __init__(self, subject, entity, action) -> None:
         self.subject = subject
         self.entity = entity
         self.action = action
 
 
+class EvaluationCtx:
+    """ Represents evaluation context. """
+    def __init__(self, access_requests: List[AccessRequest], combined_decision=True) -> None:
+        self.access_requests = access_requests
+        self.combined_decision = combined_decision
+
+
 class ResponseCtx:
-    """
-    Represents response from PDP to PEP.
-    """
+    """ Represents response from PDP to PEP. """
     results: List[AbstractResult]
 
     def __init__(self, results: List[AbstractResult]) -> None:
@@ -47,39 +54,14 @@ class ResponseCtx:
         self.results.append(result)
 
     def __str__(self) -> str:
-        length = len(self.results)
-        if length == 1:
-            result = self.results[0].encode()
-        elif length > 1:
-            result = ResponseCtx.get_combined_decision(self.results).encode()
-            result.update(dict(results=[item.encode() for item in self.results]))
+        if self.results:
+            result = dict(results=[item.encode() for item in self.results])
         else:
             result = Result(
                 Decision.Indeterminate,
-                Status(Status.Code.ProcessingError, "Response must have at least one Result")
+                Status(Status.Code.ProcessingError, "Response must contain at least one Result")
             ).encode()
         return json.dumps(result)
-
-    @staticmethod
-    def get_combined_decision(results: List[AbstractResult]) -> AbstractResult:
-        """
-        Implements custom simple combining decision method.
-        """
-        at_least_one_deny = False
-        for result in results:
-            if result.decision in [Decision.Indeterminate, Decision.NotApplicable]:
-                return AbstractResult(
-                    Decision.Indeterminate, Status(Status.Code.Ok)
-                )
-            if result.decision == Decision.Deny:
-                at_least_one_deny = True
-        if at_least_one_deny:
-            return AbstractResult(
-                    Decision.Deny, Status(Status.Code.Ok)
-                )
-        return AbstractResult(
-                Decision.Permit, Status(Status.Code.Ok)
-            )
 
 
 class ResponseCtxFactory:

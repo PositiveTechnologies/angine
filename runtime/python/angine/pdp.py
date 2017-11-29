@@ -8,10 +8,12 @@ from .results import Decision, Status, Result
 class PDP:
     LUA_ENTRY = "__main"
 
-    def __init__(self, lua_policy: str):
+    def __init__(self, lua_policy: str, handlers=None):
         """
         :param lua_policy: generated Lua policy
+        :param handlers: instance of a class containing access control helpers
         """
+        self.handlers = handlers
         lua = lupa.LuaRuntime(
             attribute_handlers=(getter, setter),
             unpack_returned_tuples=True
@@ -33,7 +35,7 @@ class PDP:
                 self.lua_policy = gfunc
                 break
         else:
-            raise ValueError("ALFA policy entry point not found")
+            raise ValueError("ALFAScript policy entry point not found")
 
     def evaluate(self, evaluation_ctx: EvaluationCtx) -> ResponseCtx:
         """ Evaluates the @self.lua_policy for all given contexts
@@ -43,11 +45,11 @@ class PDP:
             described in `self.get_response` otherwise returns list of Decision enums
         """
         ctx_list = evaluation_ctx.access_requests
-        handlers = Handlers()
+
         results = [
             Result(
                 Decision(
-                    self.lua_policy(ctx, self.actions, handlers)
+                    self.lua_policy(ctx, self.actions, self.handlers)
                 )
             ) for ctx in ctx_list
         ]

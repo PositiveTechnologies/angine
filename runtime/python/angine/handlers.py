@@ -1,5 +1,5 @@
-class Handlers(object):
-    def __init__(self):
+class Handlers:
+    def __init__(self) -> None:
         pass
 
     def check_roles(self, subject_id, entity_id):

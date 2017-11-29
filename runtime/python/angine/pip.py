@@ -1,41 +1,11 @@
 import json
 import jsonschema
 import typing
+from .context import RequestCtx, AccessRequest, EvaluationCtx
 
 
-class RequestCtx(object):
-    """ Request context is the one we have at PDP (in our case in PDP before the
-        call to Lua runtime). It contains all the necessary information about the
-        action we are going to deny or permit. Here necessary means all the IDs
-        or info needed by PIP to resolve all other entity attributes
-
-        :param subject: an object which describes the one who wants to perform an action
-        :param entities: list of objects describing entities affected by the subject's
-            action
-        :param action: an object which describes subject's action
-    """
-    def __init__(self, subject, entities, action):
-        self.subject = subject
-        self.entities = entities
-        self.action = action
-
-
-class EvaluationCtx(object):
-    """ Evaluation context is build from a request context for every single entity
-        by just filling up all the attributes resolving them via PIP.
-
-        :param subject: an object which describes the one who wants to perform an action
-        :param entities: an object which describes an entity affected by the action
-        :param action: an object which describes subject's action
-    """
-    def __init__(self, subject, entity, action):
-        self.subject = subject
-        self.entity = entity
-        self.action = action
-
-
-class PIP(object):
-    def __init__(self, attrs_dict: typing.Dict[str, object]):
+class PIP:
+    def __init__(self, attrs_dict: typing.Dict[str, object]) -> None:
         """ Creates PIP using prepared dict of attributes
 
         :param attrs_dict: dict[entity.id]entity - the dict from the entity id to its
@@ -70,19 +40,21 @@ class PIP(object):
             attrs[e.id_] = e
         return cls(attrs)
   
-    def create_ctx(self, request: RequestCtx) -> typing.List[EvaluationCtx]:
-        """ Creates `EvaluationCtx`s from the given request context. We will have a
+    def create_ctx(self, request: RequestCtx) -> EvaluationCtx:
+        """ Creates `AccessRequest`s from the given request context. We will have a
         separate context for every entity in the @request and all the objects from
         `RequestCtx` would be replaced by the ones with filled attributes from PIP
         internal storage
 
         :param request: `RequestCtx` to be resolved
-        :return: list of created `EvaluationCtx`s
+        :return: list of created `AccessRequest`s
         """
-        return [
-            EvaluationCtx(
-                subject=self.attrs[request.subject.id_],
-                entity=self.attrs[e.id_],
-                action=request.action,
-            ) for e in request.entities
-        ]
+        return EvaluationCtx([
+                AccessRequest(
+                    subject=self.attrs[request.subject.id_],
+                    entity=self.attrs[e.id_],
+                    action=request.action,
+                ) for e in request.entities
+            ],
+            request.combined_decision
+        )

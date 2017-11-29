@@ -1,4 +1,4 @@
-class Policy(object):
+class Policy:
     """
     Lua policy storage.
     """

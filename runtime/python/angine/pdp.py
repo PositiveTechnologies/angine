@@ -1,33 +1,19 @@
 import lupa
-import enum
-import typing
-
-from .pip import EvaluationCtx
+from typing import List
 from .handlers import *
+from .context import ResponseCtx, EvaluationCtx
+from .results import Decision, Status, Result
 
 
-class Decision(enum.IntEnum):
-    """ Decision described possible return values of the Lua runtime """
-    Permit = 0
-    Deny = 1
-    NotApplicable = 2
-    Indeterminate = 3
-
-
-class Status(enum.Enum):
-    MissingAttribute = "Missing attribute"
-    Ok = "ok"
-    ProcessingError = "Processing error"
-    SyntaxError = "Syntax Error"
-
-
-class PDP(object):
+class PDP:
     LUA_ENTRY = "__main"
 
-    def __init__(self, lua_policy: str):
+    def __init__(self, lua_policy: str, handlers=None):
         """
         :param lua_policy: generated Lua policy
+        :param handlers: instance of a class containing access control helpers
         """
+        self.handlers = handlers
         lua = lupa.LuaRuntime(
             attribute_handlers=(getter, setter),
             unpack_returned_tuples=True
@@ -49,34 +35,39 @@ class PDP(object):
                 self.lua_policy = gfunc
                 break
         else:
-            raise ValueError("ALFA policy entry point not found")
+            raise ValueError("ALFAScript policy entry point not found")
 
-    def evaluate(self, ctx_list: typing.List[EvaluationCtx], format_results: bool = False):
-        """ Evaluates the @self.lua_policy for a given all given context
+    def evaluate(self, evaluation_ctx: EvaluationCtx) -> ResponseCtx:
+        """ Evaluates the @self.lua_policy for all given contexts
 
-        :param ctx_list: list of EvaluationCtx to pass to the policy
+        :param evaluation_ctx: context, containing all necessary information for evaluation
         :return if @format_results to True returns list of decisions in a format
             described in `self.get_response` otherwise returns list of Decision enums
         """
-        handlers = Handlers()
-        decisions = [
-            Decision(
-                self.lua_policy(ctx, self.actions, handlers)
+        ctx_list = evaluation_ctx.access_requests
+
+        results = [
+            Result(
+                Decision(
+                    self.lua_policy(ctx, self.actions, self.handlers)
+                )
             ) for ctx in ctx_list
         ]
-        if all(d == decisions[0] for d in decisions):
-            final_decision = decisions[0]
+        if evaluation_ctx.combined_decision:
+            return ResponseCtx(
+                [PDP.get_xacml3_combined_decision(results)]
+            )
         else:
-            final_decision = Decision.Indeterminate
-        if format_results:
-            return self.format_response(final_decision)
-        return final_decision
+            return ResponseCtx(results)
 
     @staticmethod
-    def format_response(decision: Decision, status: str = None):
-        return {
-            "result": {
-                "decision": decision.name.lower(),
-                "status": status
-            }
-        }
+    def get_xacml3_combined_decision(results: List[Result]) -> Result:
+        """
+        Implements XACML3 Multiple Decision Profile combining method.
+        """
+        if all(result.decision == results[0].decision for result in results):
+            return results[0]
+        else:
+            return Result(
+                Decision.Indeterminate, Status(Status.Code.ProcessingError)
+            )

@@ -2,7 +2,7 @@ import lupa
 from typing import List
 from .handlers import *
 from .context import ResponseCtx, EvaluationCtx
-from .results import Decision, Status, Result, AbstractResult
+from .results import Decision, Status, Result
 
 
 class PDP:
@@ -59,13 +59,13 @@ class PDP:
             return ResponseCtx(results)
 
     @staticmethod
-    def get_xacml3_combined_decision(results: List[AbstractResult]) -> AbstractResult:
+    def get_xacml3_combined_decision(results: List[Result]) -> Result:
         """
         Implements XACML3 Multiple Decision Profile combining method.
         """
         if all(result.decision == results[0].decision for result in results):
             return results[0]
         else:
-            return AbstractResult(
+            return Result(
                 Decision.Indeterminate, Status(Status.Code.ProcessingError)
             )

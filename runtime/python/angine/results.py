@@ -28,14 +28,14 @@ class Status:
         self.message = message
 
 
-class AbstractResult:
+class Result:
     """
     Result of decision point.
     """
     decision: Decision
     status: Status
 
-    def __init__(self, decision: Decision, status: Status) -> None:
+    def __init__(self, decision: Decision, status: Status = Status(Status.Code.Ok, "")) -> None:
         self.decision = decision
         self.status = status
 
@@ -46,21 +46,6 @@ class AbstractResult:
         )
 
 
-class Result(AbstractResult):
-    """
-    Result.
-    """
-    def __init__(self, decision: Decision, status: Status = Status(Status.Code.Ok, "")) -> None:
-        super(Result, self).__init__(decision, status)
-
-    def encode(self):
-        context = super(Result, self).encode()
-        context.update(
-            dict(decision=self.decision.name.lower())
-        )
-        return context
-
-
 class ResultFactory:
     """
     Returns specified instance of AbstractResult.
@@ -69,5 +54,5 @@ class ResultFactory:
     """
 
     @staticmethod
-    def create(decision: Decision, status: Status) -> AbstractResult:
+    def create(decision: Decision, status: Status) -> Result:
         return Result(decision, status)

@@ -1,6 +1,6 @@
 import json
 from typing import List
-from .results import Decision, Status, AbstractResult, Result
+from .results import Decision, Status, Result
 
 
 class RequestCtx:
@@ -45,12 +45,12 @@ class EvaluationCtx:
 
 class ResponseCtx:
     """ Represents response from PDP to PEP. """
-    results: List[AbstractResult]
+    results: List[Result]
 
-    def __init__(self, results: List[AbstractResult]) -> None:
+    def __init__(self, results: List[Result]) -> None:
         self.results = results
 
-    def add_result(self, result: AbstractResult) -> None:
+    def add_result(self, result: Result) -> None:
         self.results.append(result)
 
     def __str__(self) -> str:
@@ -75,9 +75,9 @@ class ResponseCtxFactory:
         return response_ctx
 
     @staticmethod
-    def from_result(result: AbstractResult) -> ResponseCtx:
+    def from_result(result: Result) -> ResponseCtx:
         return ResponseCtx([result])
 
     @staticmethod
-    def from_results(results: List[AbstractResult]) -> ResponseCtx:
+    def from_results(results: List[Result]) -> ResponseCtx:
         return ResponseCtx(results)

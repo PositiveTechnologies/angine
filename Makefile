@@ -47,15 +47,15 @@ run-tests:
 
 packages:
 	@echo "Lua dependencies installation:"
-	apt-get install liblua5.2-dev
+	apt-get install liblua5.3-dev
 	@echo "Python dependencies installation:"
 	apt-get install python3-dev
 	${PYTHON} -m pip install -r requirements.txt
 
 
 lib:
-	mkdir -p /usr/local/share/lua/5.2/angine/
-	cp angine/lib/alfa.lua /usr/local/share/lua/5.2/angine/
+	mkdir -p /usr/local/share/lua/5.3/angine/
+	cp angine/lib/alfa.lua /usr/local/share/lua/5.3/angine/
 
 
 install: packages lib

@@ -1,16 +1,15 @@
 package angine.context;
 
 
-import angine.util.IIdentifiable;
+import java.util.List;
 
 public class EvaluationContext{
-    public IIdentifiable subject;
-    public IIdentifiable entity;
-    public Object action;
 
-    public EvaluationContext(IIdentifiable subject, IIdentifiable entity, Object action){
-        this.subject = subject;
-        this.entity = entity;
-        this.action = action;
+    public List<AccessRequest> accessRequests;
+    public boolean combinedDecision;
+
+    public EvaluationContext(List<AccessRequest> accessRequests, boolean combinedDecision) {
+        this.accessRequests = accessRequests;
+        this.combinedDecision = combinedDecision;
     }
 }

@@ -8,7 +8,7 @@ import angine.Status;
  */
 public class ResultFactory {
 
-    public static AbstractResult create(Decision decision, Status status){
+    public static Result create(Decision decision, Status status){
         return new Result(decision, status);
     }
 }

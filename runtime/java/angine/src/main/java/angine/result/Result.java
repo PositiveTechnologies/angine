@@ -7,22 +7,34 @@ import angine.Status;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Result extends AbstractResult {
+public class Result {
+
+    public final static String DECISION = "decision";
+
+    public Decision decision;
+
+    public Status status;
 
     public Result(Decision decision){
-        this(decision, new Status());
+        this.decision = decision;
+        this.status = new Status();
     }
 
-    public Result(Decision decision, Status status) {
-        super(decision, status);
+    public Result(Decision decision, Status status){
+        this.decision = decision;
+        this.status = status;
     }
 
-    @Override
-    public Map<String, Object> encode() {
-        Map<String, Object> superMap = super.encode();
-        Map<String, String> map = new HashMap<String, String>();
-        map.put(DECISION, this.decision.name().toLowerCase());
-        superMap.putAll(map);
-        return superMap;
+    public Map<String, Object> encode(){
+        Map<String,Object> resultMap = new HashMap<String, Object>();
+        resultMap.put(DECISION,this.decision.name().toLowerCase());
+        Map<String, String> statusMap = new HashMap<String, String>();
+        statusMap.put("code",this.status.code.name().toLowerCase());
+        statusMap.put("message", this.status.message);
+        resultMap.put("status", statusMap);
+        return resultMap;
     }
+
+
+
 }

@@ -48,9 +48,9 @@ public class Test {
         RequestContext request = new RequestContext(
                 new Bindings.MySubject("user1", tags , roles, 10),
                 entities,
-                "GET");
+                "GET", true);
 
-        List<EvaluationContext> evaluationContexts = pip.createContext(request);
+        EvaluationContext evaluationContexts = pip.createContext(request);
         ResponseContext responseContext = pdp.evaluate(evaluationContexts);
         if(responseContext.results.get(0).decision.equals(Decision.PERMIT)){
             System.out.println("permit success!");
@@ -75,10 +75,11 @@ public class Test {
         RequestContext request = new RequestContext(
                 subject,
                 entities,
-                "GET"
+                "GET",
+                true
         );
 
-        List<EvaluationContext> evaluationContexts = pip.createContext(request);
+        EvaluationContext evaluationContexts = pip.createContext(request);
         ResponseContext result = pdp.evaluate(evaluationContexts);
         if(!result.results.get(0).decision.equals(Decision.PERMIT)){
             System.out.println("deny success!");

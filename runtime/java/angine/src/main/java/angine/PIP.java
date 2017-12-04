@@ -1,5 +1,6 @@
 package angine;
 
+import angine.context.AccessRequest;
 import angine.context.EvaluationContext;
 import angine.context.RequestContext;
 import angine.util.IIdentifiable;
@@ -30,18 +31,30 @@ public class PIP {
     public PIP(Map<String, IIdentifiable> attrs){
         this.attrs = attrs;
     }
-    public List<EvaluationContext> createContext( RequestContext requestContext){
-        List<EvaluationContext> result = new ArrayList<EvaluationContext>();
-        for(IIdentifiable e :  requestContext.entities){
-            result.add(
-                    new EvaluationContext(
-                            attrs.get(requestContext.subject.id()),
-                            attrs.get(e.id()),
-                            requestContext.action
+
+
+    /**
+     * creates EvaluationContext, which can be passed to PDP to evaluate, from RequestContext
+     * @throws IllegalArgumentException if PIPs attributes don't contain subject, entity or action from @requestContext
+     */
+    public EvaluationContext createContext( RequestContext requestContext) throws IllegalArgumentException{
+        List<AccessRequest> accessRequests = new ArrayList<AccessRequest>(requestContext.entities.size());
+        for(IIdentifiable e : requestContext.entities){
+            IIdentifiable subject = attrs.get(requestContext.subject.id());
+            IIdentifiable entity = attrs.get(e.id());
+            Object action = requestContext.action;
+            if(subject == null || entity == null || action == null){
+                throw new IllegalArgumentException("PIP cant create proper context from this request");
+            }
+            accessRequests.add(
+                    new AccessRequest(
+                            subject,
+                            entity,
+                            action
                     )
             );
         }
-        return result;
+        return new EvaluationContext(accessRequests, requestContext.combinedDecision);
     }
 
 

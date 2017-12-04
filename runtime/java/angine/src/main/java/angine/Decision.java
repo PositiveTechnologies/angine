@@ -23,4 +23,3 @@ public enum Decision{
         throw new IllegalArgumentException("argument of function must be one of PDP's decision");
     }
 }
-

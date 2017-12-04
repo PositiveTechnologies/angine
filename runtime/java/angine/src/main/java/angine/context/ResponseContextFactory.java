@@ -1,9 +1,8 @@
 package angine.context;
 
 
-import angine.result.AbstractResult;
-import angine.Decision;
 import angine.result.Result;
+import angine.Decision;
 import angine.Status;
 
 import java.util.ArrayList;
@@ -16,13 +15,13 @@ public class ResponseContextFactory {
         return fromResult( new Result(Decision.Indeterminate, status));
     }
 
-    public static ResponseContext fromResult(AbstractResult result){
-        List<AbstractResult> results = new ArrayList<AbstractResult>(1);
+    public static ResponseContext fromResult(Result result){
+        List<Result> results = new ArrayList<Result>(1);
         results.add(result);
         return fromResults(results);
     }
 
-    public static ResponseContext fromResults(List<AbstractResult> results){
+    public static ResponseContext fromResults(List<Result> results){
         return new ResponseContext(results);
     }
 }

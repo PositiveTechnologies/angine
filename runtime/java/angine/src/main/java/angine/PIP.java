@@ -82,7 +82,7 @@ public class PIP {
             }
             return new PIP(attrs);
         } else {
-            return null;
+            throw new IllegalArgumentException("jsonText must match jsonSchema!");
         }
     }
 

@@ -12,7 +12,7 @@ public class ResponseContextFactory {
 
     public static ResponseContext indeterminate(Status.Code statusCode, String message){
         Status status = new Status(statusCode, message);
-        return fromResult( new Result(Decision.Indeterminate, status));
+        return fromResult( new Result(Decision.INDETERMINATE, status));
     }
 
     public static ResponseContext fromResult(Result result){

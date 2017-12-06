@@ -4,7 +4,6 @@ package angine.context;
 import angine.result.Result;
 import angine.Decision;
 import angine.Status;
-import com.google.common.collect.HashBiMap;
 import com.google.gson.Gson;
 
 import javax.annotation.Nonnull;
@@ -37,7 +36,7 @@ public class ResponseContext {
             }
         } else {
             res = new Result(
-                    Decision.Indeterminate,
+                    Decision.INDETERMINATE,
                     new Status(
                             Status.Code.PROCESSING_ERROR,
                             "Response must contain at least one result"))

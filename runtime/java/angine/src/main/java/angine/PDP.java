@@ -9,7 +9,6 @@ import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,10 +17,10 @@ import java.util.List;
 
 public class PDP {
 
-    public static int PERMIT = 0;
-    public static int DENY = 1;
-    public static int NOT_APPLICABLE = 2;
-    public static int INDETERMINATE = 3;
+    public static int PERMIT = Decision.PERMIT.value;
+    public static int DENY = Decision.DENY.value;
+    public static int NOT_APPLICABLE = Decision.NOT_APPLICABLE.value;
+    public static int INDETERMINATE = Decision.INDETERMINATE.value;
 
 
 
@@ -79,7 +78,7 @@ public class PDP {
     public static Result getCombinedDecision( List<Result> results){
         if(results == null || results.size() == 0){
             return new Result(
-                    Decision.Indeterminate,
+                    Decision.INDETERMINATE,
                     new Status(Status.Code.PROCESSING_ERROR)
             );
         }
@@ -87,7 +86,7 @@ public class PDP {
         for(Result result : results){
             if(results.get(0).decision != result.decision){
                 return new Result(
-                        Decision.Indeterminate,
+                        Decision.INDETERMINATE,
                         new Status(Status.Code.PROCESSING_ERROR)
                 );
             }

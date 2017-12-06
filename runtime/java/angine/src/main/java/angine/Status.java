@@ -11,10 +11,20 @@ public class Status {
         SYNTAX_ERROR(2),
         MISSING_ATTRIBUTE(3);
 
-        private final int value;
+        public final int value;
 
         Code(int i){
             this.value = i;
+        }
+
+
+        public static Code fromInt(int i){
+            for (Code code : Code.values()){
+                if (code.value == i){
+                    return code;
+                }
+            }
+            throw new IllegalArgumentException("argument of function must be one of Code's values");
         }
     }
 

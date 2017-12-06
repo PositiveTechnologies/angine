@@ -2,17 +2,18 @@ package angine;
 
 
 public enum Decision{
-    PERMIT(PDP.PERMIT),
-    DENY(PDP.DENY),
-    NotApplicable(PDP.NOT_APPLICABLE),
-    Indeterminate(PDP.INDETERMINATE);
+    PERMIT(0),
+    DENY(1),
+    NOT_APPLICABLE(2),
+    INDETERMINATE(3);
 
 
-    private final int value;
+    public final int value;
 
     Decision(int i){
         this.value = i;
     }
+
 
     public static Decision fromInt(int i) throws IllegalArgumentException{
         for (Decision decision : Decision.values()){

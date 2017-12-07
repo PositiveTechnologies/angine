@@ -4,6 +4,67 @@ PYTHON_TEST_RESOURCES=$(PYTHON_RUNTIME)/tests/resources
 
 PYTHON=python3.6
 
+JAVA_RUNTIME = runtime/java/angine
+JAVA_TEST = runtime/java/test
+JAVA_TEST_RES = ${JAVA_TEST}/fixtures/http
+JAVA_TEST_GEN = ${JAVA_TEST}/generated
+JAVA_TEST_CLASS_FOLDER = ${JAVA_TEST}/src/main/java/generated
+JAVA_TEST_RES_FOLDER = ${JAVA_TEST}/src/main/resources
+
+
+clear-java:
+	cd ${JAVA_RUNTIME}; mvn clean
+	cd ${JAVA_TEST}; mvn clean
+	rm -rf $(JAVA_TEST_GEN)
+	rm -rf ${JAVA_TEST}/libs
+	rm -rf ${JAVA_TEST_CLASS_FOLDER}
+	rm ${JAVA_TEST_RES_FOLDER}/scheme.json
+	rm ${JAVA_TEST_RES_FOLDER}/policy.lua
+	rm -rf ${JAVA_TEST_RES_FOLDER}/angine    
+	@echo "folders are cleared"      
+	
+
+compile-java-angine:
+	cd ${JAVA_RUNTIME}; mvn clean install
+
+	
+deploy-angine-to-test:
+	mkdir -p ${JAVA_TEST}/libs
+	cp ${JAVA_RUNTIME}/target/angine-0.1-SNAPSHOT.jar ${JAVA_TEST}/libs
+
+
+generate-angine-for-java:
+	mkdir -p $(JAVA_TEST_GEN)
+	${PYTHON} -m angine -t java -i $(JAVA_TEST_RES)/http.spec   \
+	                            -o $(JAVA_TEST_GEN)             \
+	                            -p $(JAVA_TEST_RES)/policy.alfa \
+	                            --package generated
+	                                             	
+	
+deploy-generated-to-test:          
+	mkdir -p ${JAVA_TEST_CLASS_FOLDER}                  
+	cp $(JAVA_TEST_GEN)/AST.java ${JAVA_TEST_CLASS_FOLDER}
+	cp $(JAVA_TEST_GEN)/Decoder.java ${JAVA_TEST_CLASS_FOLDER}
+	cp $(JAVA_TEST_GEN)/policy.lua ${JAVA_TEST_RES_FOLDER}
+	cp $(JAVA_TEST_GEN)/scheme.json ${JAVA_TEST_RES_FOLDER}
+	mkdir -p ${JAVA_TEST_RES_FOLDER}/angine
+	cp angine/lib/alfa.lua ${JAVA_TEST_RES_FOLDER}/angine
+	
+	
+	
+run-java-test:
+	cd ${JAVA_TEST}; mvn clean install
+	cd ${JAVA_TEST}; mvn dependency:copy-dependencies
+	clear
+	cd ${JAVA_TEST}/target; java -cp http-1.0-SNAPSHOT.jar:dependency/* Main
+	@echo "test finished"
+	
+test-java: compile-java-angine deploy-angine-to-test generate-angine-for-java deploy-generated-to-test run-java-test
+	
+	
+	
+
+
 clean:
 	@echo "Cleaning:"
 	find . -type f -name "*.py[co]" -delete

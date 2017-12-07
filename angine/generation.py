@@ -12,6 +12,7 @@ from .config import LUA_LIB_PATH
 
 class GenerationLanguage(enum.Enum):
     python = Language.pythonIDL
+    java = Language.javaIDL
 
 
 def parse_interfaces(spec: str) -> List[object]:

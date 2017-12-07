@@ -3,3 +3,6 @@ tests/*.pyc
 *.pyc
 .idea
 __pycache__
+
+runtime/java/angine/.idea
+runtime/java/test/.idea

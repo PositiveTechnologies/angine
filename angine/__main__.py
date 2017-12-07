@@ -11,6 +11,17 @@ if sys.version_info < (3, 6):
     sys.exit("Python < 3.6 is not supported")
 
 
+
+interfaces_filename = {
+    "python" : "ast.py",
+    "java" : "AST.java"
+}
+
+decoder_filename = {
+    "python" : "decoder.py",
+    "java" : "Decoder.java"
+}
+
 # Add arguments declaration
 def create_parser() -> ArgumentParser:
     """
@@ -42,6 +53,12 @@ def create_parser() -> ArgumentParser:
                         type=str,
                         required=True,
                         help="Specify a target language")
+    parser.add_argument("--package",
+                        action="store",
+                        type=str,
+                        required=False,
+                        help="Specify package for java generated files"
+                        )
     return parser
 
 
@@ -63,11 +80,10 @@ def main(args) -> None:
     # Construct names for all generating parts
     runtime = args.target
     output_dir = args.output
-    ####################################################
-    # TODO: That guys should have runtime-specific name
-    interfaces_file = "ast.py"
-    decoder_file = "decoder.py"
-    ###################################################
+
+    interfaces_file = interfaces_filename[runtime]
+    decoder_file = decoder_filename[runtime]
+
     json_scheme_file = "scheme.json"
 
     # Prepare target directory
@@ -85,15 +101,25 @@ def main(args) -> None:
 
     # Write it to the destination
     with open(os.path.join(output_dir, interfaces_file), "w") as f:
-        f.write(interface_classes)
+        ###############################################
+        # TODO: sould be runtime-specific
+        additional = ""
+        if(args.target == "java" and  not (args.package is None) ):
+            additional += "package " + args.package + ";\n\n"
+        ###############################################
+        f.write(additional + interface_classes)
     with open(os.path.join(output_dir, decoder_file), "w") as f:
         ###############################################
         # TODO: runtime-specific also
-        import_line = "from .{} import *\n\n".format(
-            os.path.splitext(os.path.basename(interfaces_file))[0]
-        )
+        additional = ""
+        if(args.target == "python"):
+            additional += "from .{} import *\n\n".format(
+                os.path.splitext(os.path.basename(interfaces_file))[0]
+            )
+        if(args.target == "java" and not (args.package is None)):
+            additional += "package " + args.package + ";\n\n"
         ###############################################
-        f.write(import_line + decoder)
+        f.write(additional + decoder)
     with open(os.path.join(output_dir, json_scheme_file), "w") as f:
         f.write(json_scheme)
 
@@ -101,6 +127,7 @@ def main(args) -> None:
         lua_runtime_file = policy["name"] + ".lua"
         with open(os.path.join(output_dir, lua_runtime_file), "w") as f:
             f.write(policy["lua"])
+
 
 
 if __name__ == "__main__":
